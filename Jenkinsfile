@@ -18,6 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
+		sh "go test ./..."
             }
         }
         stage('Deploy') {
