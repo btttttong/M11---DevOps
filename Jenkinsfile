@@ -25,8 +25,10 @@ pipeline {
             steps {
                 echo 'Deploying...'
                 sshagent(['77afc6fa-8107-4176-abb5-906bae6182d4']) {
-                    sh 'ssh -o StrictHostKeyChecking=no laborant@target "echo connected"'
+                    sh 'scp -o StrictHostKeyChecking=no main laborant@target:~'
+                    // sh 'ssh -o StrictHostKeyChecking=no laborant@target "echo connected"'
                 }
+                echo 'Deployed!'
             }
         }
     }
