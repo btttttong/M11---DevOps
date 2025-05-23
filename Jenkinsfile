@@ -21,14 +21,22 @@ pipeline {
                 sh "go test ./..."
             }
         }
-        stage('Deploy') {
-            steps {
+    stage('Deploy') {
+        steps {
+            withCredentials([
+                sshUserPrivateKey(
+                    credentialsId: 'target-ssh-key',
+                    keyFileVariable: 'ssh_key',
+                    usernameVariable: 'ssh_user'
+                )
+            ]) {
                 sh '''
                 ssh-keyscan 172.16.0.3 >> ~/.ssh/known_hosts
-                ansible-playbook -i hosts.ini playbook.yml
+                ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user"
                 '''
             }
         }
+    }
         /*
         stage('Deploy') {
             steps {
