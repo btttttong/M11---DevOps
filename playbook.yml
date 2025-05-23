@@ -1,0 +1,20 @@
+- hosts: all
+  tasks:
+    - name: Copy the artifact
+      copy:
+        src: main
+        dest: /home/laborant/main
+
+    - name: Create a unit file
+      become: True
+      copy:
+        src: main.service
+        dest: 
+          /etc/systemd/system/main.service
+
+    - name: Start the service
+      become: True
+      ansible.builtin.systemd:
+        name: main.service
+        daemon_reload: true
+        state: started
