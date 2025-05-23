@@ -23,12 +23,32 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                sshagent(['laborant-key']) {
-                    sh 'scp -o StrictHostKeyChecking=no main laborant@target:~'
-                    // sh 'ssh -o StrictHostKeyChecking=no laborant@target "echo connected"'
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'target-ssh-key',
+                        keyFileVariable: 'ssh_key',
+                        usernameVariable: 'ssh_user'
+                    )
+                ]) {
+                    sh """
+                    chmod +x main
+
+                    mkdir -p ~/.ssh
+                    ssh-keyscan target >> ~/.ssh/known_hosts
+
+                    ssh -i ${ssh_key} laborant@target 'sudo systemctl stop main.service || true'
+
+                    scp -i ${ssh_key} main ${ssh_user}@target:
+                    scp -i ${ssh_key} main.service ${ssh_user}@target:
+
+                    ssh -i ${ssh_key} laborant@target '
+                        sudo mv /home/laborant/main /opt/main &&
+                        sudo mv /home/laborant/main.service /etc/systemd/system/main.service &&
+                        sudo systemctl daemon-reload &&
+                        sudo systemctl enable --now main.service
+                    '
+                    """
                 }
-                echo 'Deployed!'
             }
         }
     }

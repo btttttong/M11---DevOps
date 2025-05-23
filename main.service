@@ -1,0 +1,9 @@
+[Unit]
+Description=My Application Service
+After=network.target
+
+[Service]
+ExecStart=/opt/main
+
+[Install]
+WantedBy=multi-user.target
