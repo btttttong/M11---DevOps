@@ -23,7 +23,10 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'ansible-playbook -i hosts.ini playbook.yml'
+                sh '''
+                ssh-keyscan 172.16.0.3 >> ~/.ssh/known_hosts
+                ansible-playbook -i hosts.ini playbook.yml
+                '''
             }
         }
         /*
