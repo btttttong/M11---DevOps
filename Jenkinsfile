@@ -23,6 +23,12 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                sh 'ansible-playbook -i hosts.ini playbook.yml'
+            }
+        }
+        /*
+        stage('Deploy') {
+            steps {
                 withCredentials([
                     sshUserPrivateKey(
                         credentialsId: 'target-ssh-key',
@@ -51,5 +57,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
