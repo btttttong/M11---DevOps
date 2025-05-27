@@ -30,6 +30,10 @@ pipeline {
                     usernameVariable: 'ssh_user'
                 )
             ]) {
+                echo 'Deploying...'
+                echo "Using credentials: $target-ssh-key"
+                echo "Using SSH key: $ssh_key"
+                echo "Using SSH user: $ssh_user"
                 sh """
                 mkdir -p ~/.ssh
                 ssh-keyscan docker-vm >> ~/.ssh/known_hosts
