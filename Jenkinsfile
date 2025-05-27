@@ -31,6 +31,7 @@ pipeline {
                 )
             ]) {
                 sh '''
+                mkdir -p ~/.ssh
                 ssh-keyscan docker-vm >> ~/.ssh/known_hosts
                 ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user"
                 '''
