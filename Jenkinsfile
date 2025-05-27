@@ -31,7 +31,7 @@ pipeline {
                 )
             ]) {
                 sh '''
-                ssh-keyscan 172.16.0.4 >> ~/.ssh/known_hosts
+                ssh-keyscan docker-vm >> ~/.ssh/known_hosts
                 ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user"
                 '''
             }
