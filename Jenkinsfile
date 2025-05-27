@@ -21,27 +21,39 @@ pipeline {
                 sh "go test ./..."
             }
         }
-    stage('Deploy') {
-        steps {
-            withCredentials([
-                sshUserPrivateKey(
-                    credentialsId: 'target-ssh-key',
-                    keyFileVariable: 'ssh_key',
-                    usernameVariable: 'ssh_user'
-                )
-            ]) {
-                
-                sh """
-                echo 'Deploying...'
-                echo "Using SSH key: \$ssh_key"
-                echo "Using SSH user: \$ssh_user"
-                mkdir -p ~/.ssh
-                ssh-keyscan docker-vm >> ~/.ssh/known_hosts
-                ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user"
-                """
+        stage('Deploy') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'target-ssh-key',
+                        keyFileVariable: 'ssh_key',
+                        usernameVariable: 'ssh_user'
+                    )
+                ]) {
+                    sh """
+                    echo 'Deploying...'
+                    echo "Using SSH key: \$ssh_key"
+                    echo "Using SSH user: \$ssh_user"
+
+                    mkdir -p ~/.ssh
+                    ssh-keyscan docker-vm >> ~/.ssh/known_hosts
+
+                    # Inject public key to remote if not already present
+                    PUBKEY=\$(cat ~/.ssh/jenkins.pub)
+                    ssh -i "\$ssh_key" "\$ssh_user"@docker-vm '
+                        mkdir -p ~/.ssh &&
+                        touch ~/.ssh/authorized_keys &&
+                        grep -qxF "\$PUBKEY" ~/.ssh/authorized_keys || echo "\$PUBKEY" >> ~/.ssh/authorized_keys &&
+                        chmod 700 ~/.ssh &&
+                        chmod 600 ~/.ssh/authorized_keys
+                    '
+
+                    # Run Ansible deploy
+                    ansible-playbook -i hosts.ini playbook.yml --private-key "\$ssh_key" -u "\$ssh_user"
+                    """
+                }
             }
         }
-    }
         /*
         stage('Deploy') {
             steps {
