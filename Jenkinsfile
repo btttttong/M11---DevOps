@@ -40,6 +40,7 @@ pipeline {
 
                     # Inject public key to remote if not already present
                     PUBKEY=\$(cat ~/.ssh/jenkins.pub)
+                    echo "Public key: \$PUBKEY"
                     ssh -i "\$ssh_key" "\$ssh_user"@docker-vm "echo '✔ connected'" '
                         mkdir -p ~/.ssh &&
                         touch ~/.ssh/authorized_keys &&
