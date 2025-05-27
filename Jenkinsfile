@@ -35,20 +35,6 @@ pipeline {
                     echo "Using SSH key: \$ssh_key"
                     echo "Using SSH user: \$ssh_user"
 
-                    mkdir -p ~/.ssh
-                    ssh-keyscan docker-vm >> ~/.ssh/known_hosts
-
-                    # Inject public key to remote if not already present
-                    PUBKEY=\$(cat ~/.ssh/jenkins.pub)
-                    echo "Public key: \$PUBKEY"
-                    ssh -i "\$ssh_key" "\$ssh_user"@docker-vm "echo '✔ connected'" '
-                        mkdir -p ~/.ssh &&
-                        touch ~/.ssh/authorized_keys &&
-                        grep -qxF "\$PUBKEY" ~/.ssh/authorized_keys || (echo "" >> ~/.ssh/authorized_keys && echo "\$PUBKEY" >> ~/.ssh/authorized_keys) &&
-                        chmod 700 ~/.ssh &&
-                        chmod 600 ~/.ssh/authorized_keys
-                    '
-
                     # Run Ansible deploy
                     ansible-playbook -i hosts.ini playbook.yml --private-key "\$ssh_key" -u "\$ssh_user"
                     """
