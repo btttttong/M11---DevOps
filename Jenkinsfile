@@ -30,11 +30,11 @@ pipeline {
                     usernameVariable: 'ssh_user'
                 )
             ]) {
-                echo 'Deploying...'
-                echo "Using credentials: $target-ssh-key"
-                echo "Using SSH key: $ssh_key"
-                echo "Using SSH user: $ssh_user"
+                
                 sh """
+                echo 'Deploying...'
+                echo "Using SSH key: \$ssh_key"
+                echo "Using SSH user: \$ssh_user"
                 mkdir -p ~/.ssh
                 ssh-keyscan docker-vm >> ~/.ssh/known_hosts
                 ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user"
