@@ -36,7 +36,7 @@ pipeline {
                     echo "Using SSH user: \$ssh_user"
 
                     # Run Ansible deploy
-                    ansible-playbook -i hosts.ini playbook.yml --private-key "\$ssh_key" -u "\$ssh_user"
+                    ansible-playbook -i hosts.ini playbook.yml --private-key "$ssh_key" -u "$ssh_user" -e 'ansible_ssh_common_args="-o StrictHostKeyChecking=no"'
                     """
                 }
             }
