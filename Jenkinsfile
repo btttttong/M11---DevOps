@@ -4,7 +4,7 @@ pipeline {
         go "1.24.1"
     }
     environment {
-        IMAGE_NAME = "ttl.sh/my-app:2h1"
+        IMAGE_NAME = "ttl.sh/myapp:1h"
     }
 
     triggers {
