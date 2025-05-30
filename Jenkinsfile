@@ -4,7 +4,7 @@ pipeline {
         go "1.24.1"
     }
     environment {
-        IMAGE_NAME = "ttl.sh/my-app:2h"
+        IMAGE_NAME = "ttl.sh/my-app:2h1"
     }
 
     triggers {
@@ -36,7 +36,7 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                withKubeConfig([credentialsId: 'kubernetes-token', serverUrl: 'https://k8s:6666']) {
+                withKubeConfig([credentialsId: 'kubernetes-token', serverUrl: 'https://k8s:6443']) {
                     sh "kubectl apply -f pod.yaml"
                     sh "kubectl apply -f service.yaml"
                 }
