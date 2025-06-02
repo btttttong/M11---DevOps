@@ -5,6 +5,7 @@ pipeline {
     }
     environment {
         IMAGE_NAME = "ttl.sh/my-app:2h"
+        EC2_HOST = "54.151.255.231"
     }
 
     triggers {
@@ -42,7 +43,7 @@ pipeline {
                     docker push $IMAGE_NAME
 
                     echo "[3] SSH to Docker VM and Deploy"
-                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@docker-vm "
+                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@$EC2_HOST "
                         docker pull $IMAGE_NAME &&
                         docker stop my-app || true &&
                         docker rm my-app || true &&
