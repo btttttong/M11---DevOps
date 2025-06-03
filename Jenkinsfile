@@ -43,7 +43,7 @@ pipeline {
                     docker push $IMAGE_NAME
 
                     echo "[3] SSH to Docker VM and Deploy"
-                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@$EC2_HOST "
+                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@docker "
                         docker pull $IMAGE_NAME &&
                         docker stop my-app || true &&
                         docker rm my-app || true &&
