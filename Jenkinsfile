@@ -34,18 +34,19 @@ pipeline {
                         usernameVariable: 'ssh_user'
                     )
                 ]) {
-                    sh '''
-                    echo "[1] SSH to Docker VM and Build + Deploy"
-                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@docker '
-                        cd ~/M11---DevOps &&
-                        docker build -t my-app . &&
-                        docker tag my-app ${IMAGE_NAME} &&
-                        docker push ${IMAGE_NAME} &&
-                        docker stop my-app || true &&
-                        docker rm my-app || true &&
-                        docker run -d --name my-app -p 4444:4444 ${IMAGE_NAME}
-                    '
-                    '''
+                    sh """
+                        echo "[1] SSH to Docker VM and Build + Deploy"
+                        ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@docker "
+                            cd ~/M11---DevOps &&
+                            ls -l &&
+                            docker build -t my-app . &&
+                            docker tag my-app ${IMAGE_NAME} &&
+                            docker push ${IMAGE_NAME} &&
+                            docker stop my-app || true &&
+                            docker rm my-app || true &&
+                            docker run -d --name my-app -p 4444:4444 ${IMAGE_NAME}
+                        "
+                        """
                 }
             }
         }
