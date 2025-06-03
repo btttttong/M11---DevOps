@@ -35,18 +35,18 @@ pipeline {
                     )
                 ]) {
                     sh """
-                        echo "[1] Tag & Push to Registry"
-                        docker tag my-app ${IMAGE_NAME}
-                        docker push ${IMAGE_NAME}
-
-                        echo "[2] SSH to EC2 and Run Docker"
+                        echo "[1] SSH to Docker VM and Build + Deploy"
                         ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@$EC2_HOST "
+                            cd ~/M11---DevOps &&
+                            ls -l &&
+                            docker build -t my-app . &&
+                            docker tag my-app ${IMAGE_NAME} &&
+                            docker push ${IMAGE_NAME} &&
                             docker stop my-app || true &&
                             docker rm my-app || true &&
-                            docker pull ${IMAGE_NAME} &&
                             docker run -d --name my-app -p 4444:4444 ${IMAGE_NAME}
                         "
-                    """
+                        """
                 }
             }
         }
