@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         IMAGE_NAME = "ttl.sh/my-app:2h"
-        EC2_HOST = ""
+        EC2_HOST = "54.151.255.231"
     }
 
     triggers {
