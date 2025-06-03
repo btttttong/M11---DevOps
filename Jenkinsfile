@@ -37,7 +37,7 @@ pipeline {
                     sh '''
                     echo "[1] SSH to Docker VM and Build + Deploy"
                     ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@docker '
-                        cd ~/app &&
+                        cd ~/M11---DevOps &&
                         docker build -t my-app . &&
                         docker tag my-app ${IMAGE_NAME} &&
                         docker push ${IMAGE_NAME} &&
