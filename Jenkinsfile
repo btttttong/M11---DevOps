@@ -55,6 +55,7 @@ pipeline {
                         docker rm my-app || true &&
                         docker run -d --restart unless-stopped --name my-app -p 4444:4444 $IMAGE_NAME
                     "
+                    '''
                 }
             }
         }
