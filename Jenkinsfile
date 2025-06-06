@@ -71,7 +71,6 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kubernetes-token', serverUrl: 'https://k8s:6443']) {
                     sh "kubectl apply -f pod.yaml"
-                    sh "kubectl apply -f service.yaml"
                 }
             }
         }
