@@ -69,51 +69,9 @@ pipeline {
         // }
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'target-ssh-key',
-                        keyFileVariable: 'ssh_key',
-                        usernameVariable: 'ssh_user'
-                    )
-                ]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no -i "\$ssh_key" \$ssh_user@k8s <<'EOF'
-        cat <<YAML | kubectl apply -f -
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-        name: my-app
-        spec:
-        replicas: 1
-        selector:
-            matchLabels:
-            app: my-app
-        template:
-            metadata:
-            labels:
-                app: my-app
-            spec:
-            containers:
-            - name: my-app
-                image: $IMAGE_NAME
-                ports:
-                - containerPort: 4444
-        ---
-        apiVersion: v1
-        kind: Service
-        metadata:
-        name: my-app-service
-        spec:
-        type: NodePort
-        selector:
-            app: my-app
-        ports:
-        - port: 80
-            targetPort: 4444
-            nodePort: 30080
-        YAML
-        EOF
-                    """
+                withKubeConfig([credentialsId: 'kubernetes-token', serverUrl: 'https://k8s:6443']) {
+                    sh "kubectl apply -f pod.yaml"
+                    sh "kubectl apply -f service.yaml"
                 }
             }
         }
