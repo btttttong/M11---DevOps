@@ -67,7 +67,7 @@ pipeline {
         //         }
         //     }
         // }
-                stage('Deploy to Kubernetes') {
+        stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([
                     sshUserPrivateKey(
@@ -77,43 +77,43 @@ pipeline {
                     )
                 ]) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no -i "\$ssh_key" \$ssh_user@k8s '
-                        cat <<EOF | kubectl apply -f -
-                        apiVersion: apps/v1
-                        kind: Deployment
-                        metadata:
-                        name: my-app
-                        spec:
-                        replicas: 1
-                        selector:
-                            matchLabels:
-                            app: my-app
-                        template:
-                            metadata:
-                            labels:
-                                app: my-app
-                            spec:
-                            containers:
-                            - name: my-app
-                                image: $IMAGE_NAME
-                                ports:
-                                - containerPort: 4444
-                        ---
-                        apiVersion: v1
-                        kind: Service
-                        metadata:
-                        name: my-app-service
-                        spec:
-                        type: NodePort
-                        selector:
-                            app: my-app
-                        ports:
-                        - port: 80
-                            targetPort: 4444
-                            nodePort: 30080
-                        EOF
-                                            '
-                                            """
+                    ssh -o StrictHostKeyChecking=no -i "\$ssh_key" \$ssh_user@k8s <<'EOF'
+        cat <<YAML | kubectl apply -f -
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+        name: my-app
+        spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: my-app
+        template:
+            metadata:
+            labels:
+                app: my-app
+            spec:
+            containers:
+            - name: my-app
+                image: $IMAGE_NAME
+                ports:
+                - containerPort: 4444
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+        name: my-app-service
+        spec:
+        type: NodePort
+        selector:
+            app: my-app
+        ports:
+        - port: 80
+            targetPort: 4444
+            nodePort: 30080
+        YAML
+        EOF
+                    """
                 }
             }
         }
