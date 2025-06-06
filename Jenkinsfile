@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "ttl.sh/my-app:2h"
-        TARGET_HOST = "target"
+        TARGET_HOST = "docker"
     }
 
     triggers {
@@ -13,6 +13,7 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
+                sh 'docker version'
                 sh 'npm install'
             }
         }
@@ -48,13 +49,12 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@$TARGET_HOST '
+                    ssh -o StrictHostKeyChecking=no -i "$ssh_key" $ssh_user@$TARGET_HOST "
                         docker pull $IMAGE_NAME &&
                         docker stop my-app || true &&
                         docker rm my-app || true &&
                         docker run -d --restart unless-stopped --name my-app -p 4444:4444 $IMAGE_NAME
-                    '
-                    '''
+                    "
                 }
             }
         }
