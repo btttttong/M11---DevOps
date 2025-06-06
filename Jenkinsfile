@@ -7,7 +7,7 @@ pipeline {
     }
 
     triggers {
-        pollSCM('*/1 * * * *') // check Git every minute
+        pollSCM('*/1 * * * *')
     }
 
     stages {
@@ -23,13 +23,13 @@ pipeline {
             }
         }
 
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
                 sh 'docker build -t my-app .'
             }
         }
 
-        stage('Push Image') {
+        stage('Push Docker Image') {
             steps {
                 sh '''
                 docker tag my-app $IMAGE_NAME
@@ -38,7 +38,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Target VM') {
+        stage('Deploy to Target') {
             steps {
                 withCredentials([
                     sshUserPrivateKey(
@@ -52,7 +52,7 @@ pipeline {
                         docker pull $IMAGE_NAME &&
                         docker stop my-app || true &&
                         docker rm my-app || true &&
-                        docker run -d --name my-app -p 4444:4444 $IMAGE_NAME
+                        docker run -d --restart unless-stopped --name my-app -p 4444:4444 $IMAGE_NAME
                     '
                     '''
                 }
